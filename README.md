@@ -12,8 +12,8 @@ drive the WASC project website currently housed [here](http://dev.sjsu.edu/wascp
 * Follow the rest of the prompt to finish the import.  
 * Run the project as `Web Application` to check if everything works.  
 
-Change Log:
-----------
+##Change Log:
+
 ####11/13/2012
 **[Tim]** First commit was made and more updates will be made in the future. Use the README file to track your changes and make additional comments so we have a place
 hold ourselves accountable and show others that we haven't been lazy. Let's try and have some commits from each of us **EVERY** day.

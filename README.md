@@ -17,5 +17,8 @@ drive the WASC project website currently housed [here](http://dev.sjsu.edu/wascp
 
 ####11/13/2012
 **[Tim]** First commit was made and more updates will be made in the future. Use the README file to track your changes and make additional comments so we have a place
-hold ourselves accountable and show others that we haven't been lazy. Let's try and have some commits from each of us **EVERY** day.
-Remember, our deadline is set for **Friday November 23rd**.
+hold ourselves accountable and show others that we haven't been lazy. Let's try and have some commits from each of us **EVERY** day. Remember, our deadline is set for **Friday November 23rd**.
+
+####11/14/2012
+**[Tim]** Changed some things around with how the project is built. When I imported the project on my Mac I found out that I did not update my
+JRE and Javac. Make sure you as well.

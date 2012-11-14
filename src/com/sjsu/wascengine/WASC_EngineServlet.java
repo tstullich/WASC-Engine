@@ -3,6 +3,8 @@ package com.sjsu.wascengine;
 import java.io.IOException;
 import javax.servlet.http.*;
 
+import com.google.gson.Gson;
+
 /**
  * This is going to be the "main" class for the App Engine. It
  * is going to listen on a certain port for an Http Request and
@@ -17,8 +19,13 @@ import javax.servlet.http.*;
 public class WASC_EngineServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-	   resp.setContentType("text/plain");
+	   resp.setContentType("text/json");
 		resp.getWriter().println("Hello, world");
-		resp.getWriter().println("Testing commit - keats");		
+		resp.getWriter().println("Testing commit - keats");
+		//Just a quick test to see how we can convert an object to JSON
+		Gson gson = new Gson();
+		String[] number = {"Tim", "Eddy", "Michael"};
+		String json = gson.toJson(number);
+		resp.getWriter().println(json);
 	}
 }

@@ -2,7 +2,6 @@ package com.sjsu.wascengine;
 
 import java.io.IOException;
 import javax.servlet.http.*;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -22,17 +21,15 @@ public class WASC_EngineServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 	   resp.setContentType("text/json");
-		resp.getWriter().println("Hello, world");
-		resp.getWriter().println("Testing commit - keats");
-		//Just a quick test to see how we can convert an object to JSON
-		String[] number = {"Tim", "Eddy", "Michael"};
+		//Just a quick test to see how we can convert an object to JSON	   
+		String[] names = {"Tim", "Eddy", "Michael"};
 		JsonObject obj = new JsonObject();
 		JsonArray numArray = new JsonArray();
-		for (int i = 0; i < number.length; i++)
+		for (String word : names)
 		{
-		   numArray.add(new JsonPrimitive(number[i]));
+		   numArray.add(new JsonPrimitive(word));
 		}
-		obj.addProperty("numOfContributors", number.length);
+		obj.addProperty("numOfContributors", names.length);
 		obj.add("contributors", numArray);
 		String json = obj.toString();
 		resp.getWriter().println(json);

@@ -3,10 +3,7 @@ package com.sjsu.wascengine;
 import java.io.IOException;
 import javax.servlet.http.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -27,6 +24,7 @@ public class WASC_EngineServlet extends HttpServlet {
 	   resp.setContentType("text/json");
 		resp.getWriter().println("Hello, world");
 		resp.getWriter().println("Testing commit - keats");
+		
 		//Just a quick test to see how we can convert an object to JSON
 		String[] number = {"Tim", "Eddy", "Michael"};
 		JsonObject obj = new JsonObject();

@@ -24,7 +24,6 @@ public class WASC_EngineServlet extends HttpServlet {
 	   resp.setContentType("text/json");
 		resp.getWriter().println("Hello, world");
 		resp.getWriter().println("Testing commit - keats");
-		
 		//Just a quick test to see how we can convert an object to JSON
 		String[] number = {"Tim", "Eddy", "Michael"};
 		JsonObject obj = new JsonObject();

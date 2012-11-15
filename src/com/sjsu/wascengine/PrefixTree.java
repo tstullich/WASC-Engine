@@ -1,4 +1,5 @@
 package com.sjsu.wascengine;
+
 /**
  * A PrefixTree to store keywords. Keywords have their corresponding weights
  * stored in the leaves of the tree.

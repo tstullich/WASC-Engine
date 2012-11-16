@@ -90,7 +90,9 @@ public class PrefixTree
             {
                 ++cur.occurrences;
                 return cur;
-            }            
+            }
+            if(word.charAt(i)=='-')
+            	++i;
             next = cur.children[(int) word.charAt(i) - 'a'];            
             if (next == null) // word not in tree
                 return null;            

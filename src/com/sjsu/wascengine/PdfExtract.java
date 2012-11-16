@@ -1,7 +1,7 @@
 package com.sjsu.wascengine;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfReader;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;

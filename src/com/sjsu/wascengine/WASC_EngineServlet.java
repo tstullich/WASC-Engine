@@ -24,7 +24,7 @@ import com.lowagie.text.DocumentException;
 public class WASC_EngineServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-	   resp.setContentType("text/json");
+	    resp.setContentType("text/json");
 		//Just a quick test to see how we can convert an object to JSON	   
 		String[] names = {"Tim", "Eddy", "Michael"};
 		JsonObject obj = new JsonObject();
@@ -37,10 +37,16 @@ public class WASC_EngineServlet extends HttpServlet {
 		obj.add("contributors", numArray);
 		String json = obj.toString();
 		resp.getWriter().println(json + "\n");
-		//
+		
+		resp.getWriter().println("\n--------Starting PDF file analysis---------\n");
+		
 		try {
-			PdfExtract.convertToText("testfiles/CommStudiesProvostLetterFinal.pdf");
-			testKeywordAnalyzer(resp);
+			ArrayList<String> filenames = new ArrayList<String>();
+			filenames.add("testfiles/CommStudiesProvostLetterFinal.pdf");
+			filenames.add("testfiles/Journalism_Provost_Report_APRIL_5_2011.pdf");
+			for(String file : filenames) {
+				testKeywordAnalyzer(resp, file);
+			}
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,14 +55,13 @@ public class WASC_EngineServlet extends HttpServlet {
 		
 	}
 	
-	public void testKeywordAnalyzer(HttpServletResponse resp) throws FileNotFoundException, IOException, DocumentException
+	public void testKeywordAnalyzer(HttpServletResponse resp, String filename) throws FileNotFoundException, IOException, DocumentException
     {
         // Test readKeywordFile
         KeywordAnalyzer instance = new KeywordAnalyzer();
         instance.readKeywordFile("testfiles/keywords.txt");
         
         // Get a test pdf and parse the text
-        String filename = "testfiles/CommStudiesProvostLetterFinal.pdf";
         ArrayList<String> text = PdfExtract.convertToText(filename);
         instance.parseText(text);
         
@@ -96,5 +101,6 @@ public class WASC_EngineServlet extends HttpServlet {
             }
         }
         resp.getWriter().println(sb.toString());
+        resp.getWriter().println("\n--------------End of file analysis-----------------\n");
     }
 }

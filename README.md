@@ -12,16 +12,3 @@ drive the WASC project website currently housed [here](http://dev.sjsu.edu/wascp
 * Import the project in Eclipse via `File > Import` and then choosing `Existing Projects Into Workspace` from `General`.  
 * Follow the rest of the prompt to finish the import.  
 * Run the project as `Web Application` to check if everything works.  
-
-##Change Log:
-
-####_11/13/2012_
-**[Tim]** 
-* First commit was made and more updates will be made in the future. Use the README file to track your changes and make additional comments so we have a place
-hold ourselves accountable and show others that we haven't been lazy. Let's try and have some commits from each of us **EVERY** day. Remember, our deadline is set for **Friday November 23rd**.
-
-####_11/14/2012_
-**[Tim]** 
-* Changed some things around with how the project is built. When I imported the project on my Mac I found out that I did not update my
-JRE and Javac. Make sure you do as well.
-* Imported [Michael Riha](https://github.com/michaelriha)'s and [Akshat Kukreti](https://github.com/akshatk)'s code that we need to use for analyzing the pdf files. Their source code can be found [here](https://github.com/michaelriha/WASC-Essay).

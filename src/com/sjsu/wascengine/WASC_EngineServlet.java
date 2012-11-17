@@ -34,22 +34,27 @@ public class WASC_EngineServlet extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException
 	{
-	   //Gonna try and capture the file that was sent
+	   //Gonna try and capture the files that were sent
 	   //through the request servlet
 	   try{
 	      ServletFileUpload upload = new ServletFileUpload();
 	      //Sets the MIME type to be JSON
 	      resp.setContentType("text/json");
 	      
-	      JsonArray resultsArray = new JsonArray();
 	      FileItemIterator iterator = upload.getItemIterator(req);
 	      
+	      JsonArray resultsArray = new JsonArray();
 	      while (iterator.hasNext())
-	      {
+	      { 
 	         FileItemStream item = iterator.next();
 	         InputStream stream = item.openStream();
-	         //The work for the files will be done here
-	         resultsArray.add(testKeywordAnalyzer(resp, stream, item.getName()));
+	         
+	         //Checks whether there is a form field or not
+	         if (!item.isFormField())
+	         {
+	             //The work for the files will be done here
+	             resultsArray.add(analyzeText(resp, stream, item.getName()));
+	         }
 	      }
 	      resp.getOutputStream().print(resultsArray.toString());
 	   }
@@ -59,7 +64,7 @@ public class WASC_EngineServlet extends HttpServlet
 	   }
 	}
 	
-	public JsonObject testKeywordAnalyzer(HttpServletResponse resp, InputStream fileStream, String filename) 
+	public JsonObject analyzeText(HttpServletResponse resp, InputStream fileStream, String filename) 
 	      throws FileNotFoundException, IOException, DocumentException
     {
         // Test readKeywordFile

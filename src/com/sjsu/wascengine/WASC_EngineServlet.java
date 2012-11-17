@@ -2,10 +2,16 @@ package com.sjsu.wascengine;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.SortedSet;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
+
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -25,40 +31,58 @@ public class WASC_EngineServlet extends HttpServlet
 {
    private final int RUBRICS = 5;
    private final int WEIGHT_CATEGORIES = 2;
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException 
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException, ServletException
 	{
-	   
-	   //Sets the MIME type to be JSON
-	   resp.setContentType("text/json");
-		
+	   //Gonna try and capture the file that was sent
+	   //through the request servlet
+	   try{
+	      //Sets the MIME type to be JSON
+	      ServletFileUpload upload = new ServletFileUpload();
+	      resp.setContentType("text/json");
+	      
+	      FileItemIterator iterator = upload.getItemIterator(req);
+	      while (iterator.hasNext())
+	      {
+	         FileItemStream item = iterator.next();
+	         InputStream stream = item.openStream();
+	         //The work for the files will be done here
+	         testKeywordAnalyzer(resp, stream, item.getName());
+	      }
+	   }
+	   catch (Exception e)
+	   {
+	      throw new ServletException();
+	   }
 	   //Attempts to open the specific file.
-		try 
+		/*try 
 		{
 			ArrayList<String> filenames = new ArrayList<String>();
 			//JsonObject results = new JsonObject();
 			filenames.add("testfiles/CommStudiesProvostLetterFinal.pdf");
 			filenames.add("testfiles/Journalism_Provost_Report_APRIL_5_2011.pdf");
-			for(String file : filenames) {
+			for(String file : filenames) 
+			{
 				testKeywordAnalyzer(resp, file);
-				resp.getWriter().println("\n-------Finished File Analyzing-------");
 			}
-		} catch (DocumentException e) {
+		} catch (DocumentException e) 
+		{
 			resp.getWriter().print("File Not Able To Be Opened");
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 	}
 	
-	public void testKeywordAnalyzer(HttpServletResponse resp, String filename) throws FileNotFoundException, IOException, DocumentException
+	public void testKeywordAnalyzer(HttpServletResponse resp, InputStream fileStream, String filename) 
+	      throws FileNotFoundException, IOException, DocumentException
     {
         // Test readKeywordFile
         KeywordAnalyzer instance = new KeywordAnalyzer();
         instance.readKeywordFile("testfiles/keywords.txt");
         
         // Get a test pdf and parse the text
-        ArrayList<String> text = PdfExtract.convertToText(filename);
+        ArrayList<String> text = PdfExtract.convertToText(fileStream);
         instance.parseText(text);
         
         // Print a detailed report about the file
@@ -104,13 +128,14 @@ public class WASC_EngineServlet extends HttpServlet
             for (int j = 0; j < 2; ++j)
             {
                rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
-               //Counts the frequency of each word based on weight
+               //Counts the frequency of each word based in each weight class
                JsonArray wordFrequency = new JsonArray();
                 for (String word : sets[i][j])
                 {
                     swap = instance.getKeywordOccurrences(word);
                     total += swap;
                     JsonObject aWord = new JsonObject();
+                    //Add the word with the calculated frequency
                     aWord.addProperty(word, swap);
                     wordFrequency.add(aWord);
                 }
@@ -120,5 +145,6 @@ public class WASC_EngineServlet extends HttpServlet
         }
         results.add("rubricScores", rubricScores);
         resp.getWriter().print(results.toString());
+       
     }
 }

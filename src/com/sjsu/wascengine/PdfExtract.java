@@ -3,6 +3,7 @@ package com.sjsu.wascengine;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -11,7 +12,7 @@ import java.util.Iterator;
  */
 public class PdfExtract {
     private static final int START_SIZE = 2000;
-    public static ArrayList<String> convertToText(String filename) throws DocumentException, IOException
+    public static ArrayList<String> convertToText(InputStream fileStream) throws DocumentException, IOException
     {
         boolean brackopen = false;
         boolean brackclose = false;
@@ -22,12 +23,12 @@ public class PdfExtract {
         //Accumuates a word
         StringBuilder word = new StringBuilder();
 
-        if(filename.isEmpty()){
+        if(fileStream == null){
             System.exit(1);
         }
         
         try{
-            PdfReader reader = new PdfReader(filename);
+            PdfReader reader = new PdfReader(fileStream);
             int numpages = reader.getNumberOfPages();
             for(int i=1; i<=numpages; i++){
                 byte[] pagecontent = reader.getPageContent(i);

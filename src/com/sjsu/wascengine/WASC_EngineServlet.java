@@ -37,44 +37,29 @@ public class WASC_EngineServlet extends HttpServlet
 	   //Gonna try and capture the file that was sent
 	   //through the request servlet
 	   try{
-	      //Sets the MIME type to be JSON
 	      ServletFileUpload upload = new ServletFileUpload();
+	      //Sets the MIME type to be JSON
 	      resp.setContentType("text/json");
 	      
+	      JsonArray resultsArray = new JsonArray();
 	      FileItemIterator iterator = upload.getItemIterator(req);
+	      
 	      while (iterator.hasNext())
 	      {
 	         FileItemStream item = iterator.next();
 	         InputStream stream = item.openStream();
 	         //The work for the files will be done here
-	         testKeywordAnalyzer(resp, stream, item.getName());
+	         resultsArray.add(testKeywordAnalyzer(resp, stream, item.getName()));
 	      }
+	      resp.getOutputStream().print(resultsArray.toString());
 	   }
 	   catch (Exception e)
 	   {
 	      throw new ServletException();
 	   }
-	   //Attempts to open the specific file.
-		/*try 
-		{
-			ArrayList<String> filenames = new ArrayList<String>();
-			//JsonObject results = new JsonObject();
-			filenames.add("testfiles/CommStudiesProvostLetterFinal.pdf");
-			filenames.add("testfiles/Journalism_Provost_Report_APRIL_5_2011.pdf");
-			for(String file : filenames) 
-			{
-				testKeywordAnalyzer(resp, file);
-			}
-		} catch (DocumentException e) 
-		{
-			resp.getWriter().print("File Not Able To Be Opened");
-			e.printStackTrace();
-		}*/
-		
-		
 	}
 	
-	public void testKeywordAnalyzer(HttpServletResponse resp, InputStream fileStream, String filename) 
+	public JsonObject testKeywordAnalyzer(HttpServletResponse resp, InputStream fileStream, String filename) 
 	      throws FileNotFoundException, IOException, DocumentException
     {
         // Test readKeywordFile
@@ -144,7 +129,6 @@ public class WASC_EngineServlet extends HttpServlet
             rubricScores.add(rubricScore);
         }
         results.add("rubricScores", rubricScores);
-        resp.getWriter().print(results.toString());
-       
+        return results;
     }
 }

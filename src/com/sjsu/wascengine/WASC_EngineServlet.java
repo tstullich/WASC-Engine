@@ -39,7 +39,7 @@ public class WASC_EngineServlet extends HttpServlet
 	   try{
 	      ServletFileUpload upload = new ServletFileUpload();
 	      //Sets the MIME type to be JSON
-	      resp.setContentType("text/json");
+	      resp.setContentType("text/plain");
 	      
 	      FileItemIterator iterator = upload.getItemIterator(req);
 	      

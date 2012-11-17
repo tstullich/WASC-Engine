@@ -1,4 +1,4 @@
 eclipse.preferences.version=1
-jarsExcludedFromWebInfLib=/Users/tim/git/WASC-Engine/lib/commons-fileupload-1.2.2.jar|/Users/tim/git/WASC-Engine/lib/gson-2.2.2-javadoc.jar|/Users/tim/git/WASC-Engine/lib/itextpdf-5.3.4.jar
+jarsExcludedFromWebInfLib=/Users/tim/git/WASC-Engine/lib/commons-fileupload-1.2.2.jar|/Users/tim/git/WASC-Engine/lib/gson-2.2.2-javadoc.jar|/Users/tim/git/WASC-Engine/lib/itextpdf-5.3.4.jar|C\:/Users/Tim/Documents/GitHub/WASC-Engine/lib/commons-fileupload-1.2.2.jar|C\:/Users/Tim/Documents/GitHub/WASC-Engine/lib/gson-2.2.2-javadoc.jar|C\:/Users/Tim/Documents/GitHub/WASC-Engine/lib/itextpdf-5.3.4.jar
 warSrcDir=war
 warSrcDirIsOutput=true

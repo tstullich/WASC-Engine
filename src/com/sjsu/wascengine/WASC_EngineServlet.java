@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.SortedSet;
 
 import javax.servlet.http.*;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.lowagie.text.DocumentException;
 /**
  * This is going to be the "main" class for the App Engine. It
@@ -21,34 +21,30 @@ import com.lowagie.text.DocumentException;
  *
  */
 @SuppressWarnings("serial")
-public class WASC_EngineServlet extends HttpServlet {
+public class WASC_EngineServlet extends HttpServlet 
+{
+   private final int RUBRICS = 5;
+   private final int WEIGHT_CATEGORIES = 2;
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-	    resp.setContentType("text/json");
-		//Just a quick test to see how we can convert an object to JSON	   
-		String[] names = {"Tim", "Eddy", "Michael"};
-		JsonObject obj = new JsonObject();
-		JsonArray numArray = new JsonArray();
-		for (String word : names)
+			throws IOException 
+	{
+	   
+	   //Sets the MIME type to be JSON
+	   resp.setContentType("text/json");
+		
+	   //Attempts to open the specific file.
+		try 
 		{
-		   numArray.add(new JsonPrimitive(word));
-		}
-		obj.addProperty("numOfContributors", names.length);
-		obj.add("contributors", numArray);
-		String json = obj.toString();
-		resp.getWriter().println(json + "\n");
-		
-		resp.getWriter().println("\n--------Starting PDF file analysis---------\n");
-		
-		try {
 			ArrayList<String> filenames = new ArrayList<String>();
+			//JsonObject results = new JsonObject();
 			filenames.add("testfiles/CommStudiesProvostLetterFinal.pdf");
 			filenames.add("testfiles/Journalism_Provost_Report_APRIL_5_2011.pdf");
 			for(String file : filenames) {
 				testKeywordAnalyzer(resp, file);
+				resp.getWriter().println("\n-------Finished File Analyzing-------");
 			}
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
+			resp.getWriter().print("File Not Able To Be Opened");
 			e.printStackTrace();
 		}
 		
@@ -67,12 +63,18 @@ public class WASC_EngineServlet extends HttpServlet {
         
         // Print a detailed report about the file
         int totOne = 0, totTwo = 0, total = 0, swap;
-        StringBuilder sb = new StringBuilder();
+
+        //Create A JSON Object that will hold all the results
+        JsonObject results = new JsonObject();
+        results.addProperty("fileName", filename);
+        
         int[][] wordCounts = instance.getWordCounts();
         SortedSet<String>[][] sets = instance.getKeywordsUsed();
         
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 2; ++j)
+        //Calculates Some General Statistics
+        for (int i = 0; i < RUBRICS; ++i)
+        {
+            for (int j = 0; j < WEIGHT_CATEGORIES; ++j)
             {
                 if (j == 0)
                     totOne += wordCounts[i][j];
@@ -80,27 +82,43 @@ public class WASC_EngineServlet extends HttpServlet {
                     totTwo += wordCounts[i][j];
                 total += wordCounts[i][j];
             }
-        sb.append("Keywords in ").append(filename).append(": ").append(total);
-        sb.append("\nTotal Weight 1 Keywords: ").append(totOne).append("\n");
-        sb.append("Total Weight 2 Keywords: ").append(totTwo);
-        sb.append("\nTotal words: ").append(instance.getTotalWords());
+        }
+        
+        results.addProperty("totalKeywords", total);
+        results.addProperty("weight1Keywords", totOne);
+        results.addProperty("weight2Keywords", totTwo);
+        results.addProperty("totalWords", instance.getTotalWords());
+        
+        //Scores for each individual rubric will be calculated here
         double[] scores = instance.calculateScores();
-        for (int i = 0; i < 5; ++i)
+        
+        /*This JSON array will hold JsonObjects that contain
+         *more information on each rubric including scores,
+         *weigths and the frequency of certain keywords.
+         */
+        JsonArray rubricScores = new JsonArray();
+        for (int i = 0; i < RUBRICS; ++i)
         {
-            sb.append("\n\nRubric ").append(i+1).append(" Score: ");
-            sb.append(String.format("%.2f", scores[i]));
+           JsonObject rubricScore = new JsonObject(); 
+           rubricScore.addProperty("rubric" + (i + 1) + "score", scores[i]);
             for (int j = 0; j < 2; ++j)
             {
-                sb.append("\n Weight ").append(j+1).append(" keywords used: ").append(wordCounts[i][j]).append("\n ");
+               rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
+               //Counts the frequency of each word based on weight
+               JsonArray wordFrequency = new JsonArray();
                 for (String word : sets[i][j])
                 {
                     swap = instance.getKeywordOccurrences(word);
                     total += swap;
-                    sb.append(word).append(" ").append(swap).append(" ");
+                    JsonObject aWord = new JsonObject();
+                    aWord.addProperty(word, swap);
+                    wordFrequency.add(aWord);
                 }
+                rubricScore.add("words"+ (j+1) + "Frequency", wordFrequency);
             }
+            rubricScores.add(rubricScore);
         }
-        resp.getWriter().println(sb.toString());
-        resp.getWriter().println("\n--------------End of file analysis-----------------\n");
+        results.add("rubricScores", rubricScores);
+        resp.getWriter().print(results.toString());
     }
 }

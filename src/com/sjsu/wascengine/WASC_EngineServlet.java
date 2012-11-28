@@ -69,7 +69,7 @@ public class WASC_EngineServlet extends HttpServlet
 	}
 	
 	public JsonObject analyzeText(HttpServletResponse resp, InputStream fileStream, String filename) 
-	      throws FileNotFoundException, IOException, DocumentException
+	      throws FileNotFoundException, IOException, DocumentException, com.itextpdf.text.DocumentException
     {
         // Test readKeywordFile
         KeywordAnalyzer instance = new KeywordAnalyzer();

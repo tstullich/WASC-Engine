@@ -53,13 +53,16 @@ public class PrefixTree
         int next_idx;
         
         for (int i = 0; i < word.length(); ++i)
-        {
+        {            
+            if (word.charAt(i) == '-' && ++i == word.length()) // skip hyphens 
+                break;
             // add the node. if is already weighted then return false
             next_idx = (int) (word.charAt(i) - 'a');
             if (cur.children[next_idx] == null)
                 if (cur.weight == 0)
                     cur.children[next_idx] = new Node();
-                else return false;            
+                else 
+                    return false;
             cur = cur.children[next_idx]; // descend the tree
         }
         // reached a leaf so set the weight
@@ -90,13 +93,13 @@ public class PrefixTree
             {
                 ++cur.occurrences;
                 return cur;
-            }
-            if(word.charAt(i)=='-')
-            	++i;
+            }            
+            if (word.charAt(i) == '-' && ++i == word.length())
+                break;
             next = cur.children[(int) word.charAt(i) - 'a'];            
-            if (next == null) // word not in tree
-                return null;            
-            cur = next; // descend the tree
+            if (next == null)// word not in tree
+                return null;
+            cur = next;
         }
         if (cur.weight > 0)
         {
@@ -120,7 +123,9 @@ public class PrefixTree
         for (int i = 0; i < word.length(); ++i)
         {
             if (cur.weight > 0) // "wildcard" found early
-                return cur;
+                return cur;            
+            if (word.charAt(i) == '-' && ++i == word.length()) // skip hyphens 
+                break;
             next = cur.children[(int) word.charAt(i) - 'a'];            
             if (next == null) // word not in tree
                 return null;            
@@ -139,7 +144,7 @@ public class PrefixTree
         if (node.occurrences != 0)
             node.occurrences = 0;
         else 
-            for (int i = 0; i < 25; ++i)
+            for (int i = 0; i < 26; ++i)
                 if (node.children[i] != null)
                     resetHelper(node.children[i]);
                 else break;

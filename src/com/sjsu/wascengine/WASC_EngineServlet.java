@@ -13,6 +13,8 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lowagie.text.DocumentException;
@@ -56,7 +58,9 @@ public class WASC_EngineServlet extends HttpServlet
 	             resultsArray.add(analyzeText(resp, stream, item.getName()));
 	         }
 	      }
-	      resp.getOutputStream().print(resultsArray.toString());
+	      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	      String json = gson.toJson(resultsArray);
+	      resp.getOutputStream().print(json);
 	   }
 	   catch (Exception e)
 	   {

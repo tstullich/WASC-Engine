@@ -98,15 +98,18 @@ public class KeywordAnalyzer
         int rubric, weight;        
         for (String word : words)
         {
-            values = keywordTree.find(word);
-            if (values != null)
-            {
-                rubric = values.getRubric();
-                weight = values.getWeight();
-                ++wordCounts[rubric - 1][weight - 1];
-                keywordsUsed[rubric - 1][weight - 1].add(word);
-            }
-            ++totalWords;
+           if(word.length() != 1)
+           {
+              values = keywordTree.find(word);
+              if (values != null)
+              {
+                 rubric = values.getRubric();
+                 weight = values.getWeight();
+                 ++wordCounts[rubric - 1][weight - 1];
+                 keywordsUsed[rubric - 1][weight - 1].add(word);
+              }
+           }
+           ++totalWords;
         }
     }
     

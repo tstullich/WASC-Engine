@@ -8,22 +8,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Program for extracting words from a PDF document
  * @author Akshat Kukreti
  */
 public class PdfExtract {
     private static final int START_SIZE = 2000;
-    
-    /**
-     * function for reading a PDF document and extracting words from it
-     * @param filename is the path to the PDF document
-     * @return cleanwords is an ArrayList containing all the words present in 
-     * the document
-     * @throws DocumentException
-     * @throws IOException 
-     */
-    public static ArrayList<String> convertToText(InputStream filename) 
-            throws DocumentException, IOException
+    public static ArrayList<String> convertToText(InputStream filename) throws DocumentException, IOException
     {
         boolean brackopen = false;
         boolean brackclose = false;
@@ -96,22 +85,25 @@ public class PdfExtract {
             System.out.println(e.toString());
         }
         
-        /**
-          *Cleaning up words. Getting rid of strings that are only hyphens and
-          *words that are only spaces
-          */ 
-        ArrayList<String> cleanwords = new ArrayList<String>(START_SIZE);
-        Iterator<String> worditerator = words.iterator();
-        while(worditerator.hasNext()){
-            String str = worditerator.next().toString();
-            if(str.indexOf('-') == 0 || str.indexOf(' ') == 0){
+        //Correcting split up words and adding them
+        ArrayList<String> unsplitwords; 
+        unsplitwords= new ArrayList<String>(START_SIZE);
+        Iterator<String> wordit = words.iterator();
+            while(wordit.hasNext()){
+                String word1 = wordit.next().toString();
+                if(word1.charAt(word1.length() -1) == '-' && 
+                        word1.length() > 1){
+                    String word2 = wordit.next().toString();
+                    word1 = word1.replace('-',' ');
+                    String concatword = word1.concat(word2);
+                    concatword = concatword.replaceAll(" ","");
+                    unsplitwords.add(concatword);
+                }
+                else if(!word1.equals("-")) {
+                    unsplitwords.add(word1);
+                }
             }
-            else{
-                cleanwords.add(str);
-            }
-        }
         
-        return cleanwords;      
+        return unsplitwords;        
     }
 }
-

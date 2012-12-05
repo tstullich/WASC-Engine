@@ -8,11 +8,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
+ * Program for extracting words from a PDF document
  * @author Akshat Kukreti
  */
 public class PdfExtract {
     private static final int START_SIZE = 2000;
-    public static ArrayList<String> convertToText(InputStream filename) throws DocumentException, IOException
+    
+    /**
+     * function for reading a PDF document and extracting words from it
+     * @param filename is the path to the PDF document
+     * @return cleanwords is an ArrayList containing all the words present in 
+     * the document
+     * @throws DocumentException
+     * @throws IOException 
+     */
+    public static ArrayList<String> convertToText(InputStream filename) 
+            throws DocumentException, IOException
     {
         boolean brackopen = false;
         boolean brackclose = false;
@@ -64,7 +75,10 @@ public class PdfExtract {
                             word.append(lowerc);
                         }
                         else if(c == '-'){
-                            word.append(c);
+                            if(word.length() > 0 &&
+                                !(word.charAt(word.length()-1) == '-')){    
+                                word.append(c);
+                            }
                         }
                         if(c == ' '){
                             String wordstring = word.toString();
@@ -85,25 +99,20 @@ public class PdfExtract {
             System.out.println(e.toString());
         }
         
-        //Correcting split up words and adding them
-        ArrayList<String> unsplitwords; 
-        unsplitwords= new ArrayList<String>(START_SIZE);
-        Iterator<String> wordit = words.iterator();
-            while(wordit.hasNext()){
-                String word1 = wordit.next().toString();
-                if(word1.charAt(word1.length() -1) == '-' && 
-                        word1.length() > 1){
-                    String word2 = wordit.next().toString();
-                    word1 = word1.replace('-',' ');
-                    String concatword = word1.concat(word2);
-                    concatword = concatword.replaceAll(" ","");
-                    unsplitwords.add(concatword);
-                }
-                else if(!word1.equals("-")) {
-                    unsplitwords.add(word1);
-                }
+        /**
+          *Cleaning up words. Getting rid of strings that are only hyphens and
+          *words that are only spaces
+          */ 
+        ArrayList<String> cleanwords = new ArrayList<String>(START_SIZE);
+        Iterator<String> worditerator = words.iterator();
+        while(worditerator.hasNext()){
+            String str = worditerator.next().toString();
+            if(str.indexOf('-') == 0 || str.indexOf(' ') == 0){
             }
-        
-        return unsplitwords;        
+            else{
+                cleanwords.add(str);
+            }
+        }
+        return cleanwords;      
     }
 }

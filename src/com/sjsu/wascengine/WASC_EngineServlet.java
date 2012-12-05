@@ -73,6 +73,8 @@ public class WASC_EngineServlet extends HttpServlet
 	   }
 	}
 	
+	//This is officially the longest method I have ever seen
+	//F*** subroutines, get money
 	public JsonObject analyzeText(HttpServletResponse resp, InputStream fileStream, String filename) 
 	      throws FileNotFoundException, IOException, DocumentException, com.itextpdf.text.DocumentException
     {
@@ -119,10 +121,10 @@ public class WASC_EngineServlet extends HttpServlet
          *weigths and the frequency of certain keywords.
          */	 
         JsonArray rubricScores = new JsonArray();
-	JsonObject aWordGroup;
+        JsonObject aWordGroup;
         // Some stuff to group keywords together like this
-	// ["address, addressed, addresses" : 42]
-	SortedSet<String>[][] sets = analyzer.getKeywordsUsed();
+        // ["address, addressed, addresses" : 42]
+        SortedSet<String>[][] sets = analyzer.getKeywordsUsed();
         StringBuilder group = new StringBuilder(); // group of keywords
         String lastWildcard, word;
         Iterator < String > iter;
@@ -135,9 +137,9 @@ public class WASC_EngineServlet extends HttpServlet
             for (int j = 0; j < WEIGHT_CATEGORIES; ++j)
             {
                 rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
-		//Counts the frequency of each word based in each weight class
-		JsonArray wordFrequency = new JsonArray();
-		// just in case there were NO keywords, skip to the next rubric
+                //Counts the frequency of each word based in each weight class
+                JsonArray wordFrequency = new JsonArray();
+                // just in case there were NO keywords, skip to the next rubric
                 if (sets[i][j].size() == 0)
                 {
                     group.append("");
@@ -146,34 +148,35 @@ public class WASC_EngineServlet extends HttpServlet
                 lastWildcard = sets[i][j].first();
                 iter = sets[i][j].iterator();
                 group = new StringBuilder();
-		aWordGroup = new JsonObject();
+                aWordGroup = new JsonObject();
                 first = true;
-		while (iter.hasNext()) // process each word in sets[i][j]
+                while (iter.hasNext()) // process each word in sets[i][j]
                 {
                     word = iter.next();
-		    if (word.startsWith(lastWildcard))
-                    { // build part of a keyword group
-                        if (first)
+                       if (word.startsWith(lastWildcard))
+                       { // build part of a keyword group
+                          if (first)
                             first = false;
-                        else
+                          else
                             group.append(", ");
-                        group.append(word);
-                    }
-                    else // new keyword group found, so create a json object for
-		    {    // the last keyword group with the total occurrences
+                          group.append(word);
+                       }
+                       else // new keyword group found, so create a json object for
+                       {    // the last keyword group with the total occurrences
                         aWordGroup = new JsonObject();
                         occurrences = analyzer.getKeywordOccurrences(lastWildcard);
-			aWordGroup.addProperty(group, occurrences);
+                        aWordGroup.addProperty(group.toString(), occurrences);
                         wordFrequency.add(aWordGroup);
                         
                         // create a new keyword group and update the wildcard
                         group = new StringBuilder().append(word);
                         lastWildcard = word;
                     }
-                } // add the last group since it gets skipped by grouping logic
+                } 
+                // add the last group since it gets skipped by grouping logic
                 aWordGroup = new JsonObject();
                 occurrences = analyzer.getKeywordOccurrences(lastWildcard);
-		aWordGroup.addProperty(group, occurrences);
+                aWordGroup.addProperty(group.toString(), occurrences);
                 wordFrequency.add(aWordGroup);
                 rubricScore.add("words"+ (j+1) + "Frequency", wordFrequency);
             }

@@ -113,7 +113,7 @@ public class WASC_EngineServlet extends HttpServlet
         
         //Scores for each individual rubric will be calculated here
         double[] scores = instance.calculateScores();
-        
+        results.addProperty("totalScore", calcTotal(scores));
         /*This JSON array will hold JsonObjects that contain
          *more information on each rubric including scores,
          *weigths and the frequency of certain keywords.
@@ -146,5 +146,20 @@ public class WASC_EngineServlet extends HttpServlet
         }
         results.add("rubricScores", rubricScores);
         return results;
+    }
+	
+	/**
+	 * Helper methods for the win
+	 * @param scores
+	 * @return
+	 */
+	 private double calcTotal(double[] scores)
+    {
+       double total = 0;
+       for (double score : scores)
+       {
+          total += score;
+       }
+       return total / scores.length;
     }
 }

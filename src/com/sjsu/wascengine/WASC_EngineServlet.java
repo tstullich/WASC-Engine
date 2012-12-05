@@ -25,6 +25,10 @@ import com.lowagie.text.DocumentException;
  * work in order to figure out the appropriate rubric scores and
  * return the final result as a JSON object.
  * 
+ * **Sorry to whoever has to take over this project after us.
+ *   Godspeed, for you are in for a semester full of frustration and
+ *   confusion. Don't let them get to you**
+ *   
  * @author Tim Stullich
  *
  */
@@ -113,6 +117,9 @@ public class WASC_EngineServlet extends HttpServlet
         /*This JSON array will hold JsonObjects that contain
          *more information on each rubric including scores,
          *weigths and the frequency of certain keywords.
+         *MAKE SURE YOU GROUP WORDS OF THE SAME CATEGORY TOGETHER
+         *i.e {format, formats, formatting} 
+         *This hasn't been done yet hehe
          */
         JsonArray rubricScores = new JsonArray();
         for (int i = 0; i < RUBRICS; ++i)

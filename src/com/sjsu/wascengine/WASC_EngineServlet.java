@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.SortedSet;
 
 import javax.servlet.ServletException;
@@ -76,22 +77,21 @@ public class WASC_EngineServlet extends HttpServlet
 	      throws FileNotFoundException, IOException, DocumentException, com.itextpdf.text.DocumentException
     {
         // Test readKeywordFile
-        KeywordAnalyzer instance = new KeywordAnalyzer();
-        instance.readKeywordFile("testfiles/keywords.txt");
+        KeywordAnalyzer analyzer = new KeywordAnalyzer();
+        analyzer.readKeywordFile("testfiles/keywords.txt");
         
         // Get a test pdf and parse the text
         ArrayList<String> text = PdfExtract.convertToText(fileStream);
-        instance.parseText(text);
+        analyzer.parseText(text);
         
         // Print a detailed report about the file
-        int totOne = 0, totTwo = 0, total = 0, swap;
+        int totOne = 0, totTwo = 0, total = 0, occurrences;
 
         //Create A JSON Object that will hold all the results
         JsonObject results = new JsonObject();
         results.addProperty("fileName", filename);
         
-        int[][] wordCounts = instance.getWordCounts();
-        SortedSet<String>[][] sets = instance.getKeywordsUsed();
+        int[][] wordCounts = analyzer.getWordCounts();
         
         //Calculates Some General Statistics
         for (int i = 0; i < RUBRICS; ++i)
@@ -109,57 +109,77 @@ public class WASC_EngineServlet extends HttpServlet
         results.addProperty("totalKeywords", total);
         results.addProperty("weight1Keywords", totOne);
         results.addProperty("weight2Keywords", totTwo);
-        results.addProperty("totalWords", instance.getTotalWords());
+        results.addProperty("totalWords", analyzer.getTotalWords());
         
         //Scores for each individual rubric will be calculated here
-        double[] scores = instance.calculateScores();
-        results.addProperty("totalScore", calcTotal(scores));
+        double[] scores = analyzer.calculateScores();
+        results.addProperty("totalScore", scores[RUBRICS]);
         /*This JSON array will hold JsonObjects that contain
          *more information on each rubric including scores,
          *weigths and the frequency of certain keywords.
-         *MAKE SURE YOU GROUP WORDS OF THE SAME CATEGORY TOGETHER
-         *i.e {format, formats, formatting} 
-         *This hasn't been done yet hehe
-         */
+         */	 
         JsonArray rubricScores = new JsonArray();
+	JsonObject aWordGroup;
+        // Some stuff to group keywords together like this
+	// ["address, addressed, addresses" : 42]
+	SortedSet<String>[][] sets = analyzer.getKeywordsUsed();
+        StringBuilder group = new StringBuilder(); // group of keywords
+        String lastWildcard, word;
+        Iterator < String > iter;
+        boolean first;
+	
         for (int i = 0; i < RUBRICS; ++i)
         {
-           JsonObject rubricScore = new JsonObject(); 
-           rubricScore.addProperty("rubric" + (i + 1) + "score", scores[i]);
+            JsonObject rubricScore = new JsonObject(); 
+            rubricScore.addProperty("rubric" + (i + 1) + "score", scores[i]);
             for (int j = 0; j < WEIGHT_CATEGORIES; ++j)
             {
-               rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
-               //Counts the frequency of each word based in each weight class
-               JsonArray wordFrequency = new JsonArray();
-                for (String word : sets[i][j])
+                rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
+		//Counts the frequency of each word based in each weight class
+		JsonArray wordFrequency = new JsonArray();
+		// just in case there were NO keywords, skip to the next rubric
+                if (sets[i][j].size() == 0)
                 {
-                    swap = instance.getKeywordOccurrences(word);
-                    total += swap;
-                    JsonObject aWord = new JsonObject();
-                    //Add the word with the calculated frequency
-                    aWord.addProperty(word, swap);
-                    wordFrequency.add(aWord);
+                    group.append("");
+                    break; // if weight 1 is empty, this will prematurely skip 2
                 }
+                lastWildcard = sets[i][j].first();
+                iter = sets[i][j].iterator();
+                group = new StringBuilder();
+		aWordGroup = new JsonObject();
+                first = true;
+		while (iter.hasNext()) // process each word in sets[i][j]
+                {
+                    word = iter.next();
+		    if (word.startsWith(lastWildcard))
+                    { // build part of a keyword group
+                        if (first)
+                            first = false;
+                        else
+                            group.append(", ");
+                        group.append(word);
+                    }
+                    else // new keyword group found, so create a json object for
+		    {    // the last keyword group with the total occurrences
+                        aWordGroup = new JsonObject();
+                        occurrences = analyzer.getKeywordOccurrences(lastWildcard);
+			aWordGroup.addProperty(group, occurrences);
+                        wordFrequency.add(aWordGroup);
+                        
+                        // create a new keyword group and update the wildcard
+                        group = new StringBuilder().append(word);
+                        lastWildcard = word;
+                    }
+                } // add the last group since it gets skipped by grouping logic
+                aWordGroup = new JsonObject();
+                occurrences = analyzer.getKeywordOccurrences(lastWildcard);
+		aWordGroup.addProperty(group, occurrences);
+                wordFrequency.add(aWordGroup);
                 rubricScore.add("words"+ (j+1) + "Frequency", wordFrequency);
             }
             rubricScores.add(rubricScore);
         }
         results.add("rubricScores", rubricScores);
         return results;
-    }
-	
-	/**
-	 * Helper methods for the win
-	 * @param scores
-	 * @return
-	 */
-	 private double calcTotal(double[] scores)
-    {
-       double total = 0;
-       for (double score : scores)
-       {
-          total += score;
-       }
-       return total / scores.length;
     }
 }

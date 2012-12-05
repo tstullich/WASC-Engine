@@ -45,7 +45,7 @@ public class WASC_EngineServlet extends HttpServlet
 	   try{
 	      ServletFileUpload upload = new ServletFileUpload();
 	      //Sets the MIME type to be JSON
-	      resp.setContentType("text/plain");
+	      resp.setContentType("application/json");
 	      
 	      FileItemIterator iterator = upload.getItemIterator(req);
 	      
@@ -126,7 +126,7 @@ public class WASC_EngineServlet extends HttpServlet
         {
            JsonObject rubricScore = new JsonObject(); 
            rubricScore.addProperty("rubric" + (i + 1) + "score", scores[i]);
-            for (int j = 0; j < 2; ++j)
+            for (int j = 0; j < WEIGHT_CATEGORIES; ++j)
             {
                rubricScore.addProperty("weight" + (j + 1) + "WordsUsed", wordCounts[i][j]);
                //Counts the frequency of each word based in each weight class
